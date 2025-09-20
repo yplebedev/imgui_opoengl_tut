@@ -12,18 +12,21 @@
 #
 
 #CXX = g++
-#CXX = clang++
+#CXX = /opt/homebrew/opt/llvm/bin/clang++
 
 EXE = example_glfw_opengl3
 IMGUI_DIR = ../..
-SOURCES = main.cpp
+SOURCES = stb_image_impl.cpp
+SOURCES += main.cpp
 SOURCES += $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
 SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
+SOURCES += $(IMGUI_DIR)/examples/libs/glad/src/glad.c
+
 OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 UNAME_S := $(shell uname -s)
 LINUX_GL_LIBS = -lGL
 
-CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
+CXXFLAGS = -std=c++20 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I$(IMGUI_DIR)/examples/libs/glad/include
 CXXFLAGS += -g -Wall -Wformat
 LIBS =
 
@@ -78,6 +81,9 @@ endif
 
 %.o:$(IMGUI_DIR)/backends/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+%.o:$(IMGUI_DIR)/examples/libs/glad/src/glad.c
+	gcc -c -I$(IMGUI_DIR)/examples/libs/glad/include -o $@ $<
 
 all: $(EXE)
 	@echo Build complete for $(ECHO_MESSAGE)
